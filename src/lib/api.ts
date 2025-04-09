@@ -118,11 +118,18 @@ export const getCategories = async () => {
   return response.data;
 };
 
-export const getComics = async () => {
-  const { data: categoriesData } = await getCategories();
-  const firstCategory = categoriesData.items[0];
-  const response = await api.get(`/the-loai/${firstCategory.slug}`);
-  return response.data;
+export const getComics = async (page = 1) => {
+  try {
+    const { data: categoriesData } = await getCategories();
+    const firstCategory = categoriesData.items[0];
+    const response = await api.get(`/the-loai/${firstCategory.slug}`, {
+      params: { page }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching comics:', error);
+    return { data: { items: [] } };
+  }
 };
 
 export const searchComics = async (keyword: string) => {
