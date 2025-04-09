@@ -1,0 +1,294 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 0, 0, 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    )
+    fixed;
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+  
+  .snap-x {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+  
+  .snap-start {
+    scroll-snap-align: start;
+  }
+}
+
+/* Carousel styles */
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 2rem 0 2rem 0;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+  margin-bottom: 1rem;
+  height: 372px;
+}
+
+.carousel-slider {
+  display: flex;
+  width: 100%;
+  scroll-behavior: smooth;
+  height: 372px;
+  transition: transform 0.7s ease-in-out;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Enhanced shine effect */
+.shine-effect {
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
+  z-index: 5;
+  pointer-events: none;
+  animation: activeShine 2s infinite;
+}
+
+/* Active slide animation */
+.carousel-slide.scale-110 .shine-effect {
+  animation: activeShine 2s infinite;
+}
+
+.carousel-slide:hover .shine-effect {
+  animation: shine 0.8s forwards;
+}
+
+@keyframes shine {
+  0% {
+    background-position: -200% center;
+  }
+  50% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+@keyframes activeShine {
+  0%, 100% {
+    left: -150%;
+    opacity: 0;
+  }
+  50% {
+    left: 150%;
+    opacity: 0.7;
+  }
+}
+
+/* Labels Animation */
+.carousel-slide span {
+  transform-origin: center;
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-slide:hover span {
+  animation-play-state: paused;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(var(--rotation, 0deg));
+  }
+  50% {
+    transform: translateY(-3px) rotate(var(--rotation, 0deg));
+  }
+}
+
+/* Custom label styles */
+.label-hot {
+  --rotation: 2deg;
+  background: linear-gradient(45deg, #ff0000, #ff6b6b);
+  animation: pulse 2s infinite;
+}
+
+.label-new {
+  --rotation: -2deg;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  animation: pulse 2s infinite 0.5s;
+}
+
+.label-exclusive {
+  --rotation: 1deg;
+  background: linear-gradient(45deg, #ff9500, #ff6f00);
+  animation: pulse 2s infinite 1s;
+}
+
+/* Fancy transitions */
+.carousel-slide {
+  transition: all 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.carousel-slide.scale-120 {
+  transition: all 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes mirror {
+  0% {
+    left: 100%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  100% {
+    left: -20%;
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Shine effect only for active slides */
+.carousel-slide.scale-120:before,
+.carousel-slide.scale-110:before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 75%
+  );
+  background-size: 200% 200%;
+  animation: shine 3s linear infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Explicitly remove shine effect from non-active slides */
+.carousel-slide:not(.scale-120):before,
+.carousel-slide:not(.scale-110):before {
+  content: none;
+  display: none;
+  animation: none;
+}
+
+.carousel-slide:not(.scale-120),
+.carousel-slide:not(.scale-110) {
+  animation: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .mobile-px-smaller {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .mobile-gap-smaller {
+    gap: 0.5rem !important;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Mobile Scrollbar */
+.mobile-scrollbar {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.mobile-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+} 
