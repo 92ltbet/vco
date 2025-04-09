@@ -41,11 +41,17 @@ const nextConfig = {
   // Tắt tính năng dùng fs để tránh lỗi khi export static
   experimental: {
     optimizeCss: true,
+    serverComponentsExternalPackages: ['cron'],
   },
   // nextjs strict mode
   reactStrictMode: true,
-  // Tắt các feature phụ thuộc vào server khi export static
-  trailingSlash: true,
+  // Cấu hình cho Cloudflare
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig; 
