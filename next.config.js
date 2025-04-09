@@ -20,8 +20,25 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       }
-    ]
-  }
+    ],
+    unoptimized: true,
+  },
+  // Tắt webpack cache
+  webpack: (config, { dev, isServer }) => {
+    // Chỉ tắt cache trên production build
+    if (!dev && isServer) {
+      config.cache = false;
+    }
+    
+    // Giảm kích thước bundle
+    if (!dev) {
+      config.optimization.minimize = true;
+    }
+    
+    return config;
+  },
+  // Hạn chế kích thước output
+  outputFileTracing: false,
 };
 
 module.exports = nextConfig; 
