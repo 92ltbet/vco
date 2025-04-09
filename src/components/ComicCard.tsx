@@ -1,0 +1,105 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Comic } from '@/types/comic';
+import { getImageUrl } from '@/lib/imageUtils';
+import { formatDistanceToNow } from 'date-fns';
+import { vi } from 'date-fns/locale';
+
+interface ComicCardProps {
+  comic: Comic;
+  className?: string;
+}
+
+export default function ComicCard({ comic, className = '' }: ComicCardProps) {
+  console.log('Comic data:', comic);
+  console.log('ChaptersLatest:', comic.chaptersLatest);
+  console.log('Chapters:', comic.chapters);
+  console.log('Total chapters:', comic.total_chapters);
+
+  // Lấy số chapter từ nhiều nguồn
+  let chapterNumber = "?";
+  
+  // Cách 1: Lấy từ chaptersLatest nếu có
+  if (comic.chaptersLatest && comic.chaptersLatest.length > 0) {
+    const match = comic.chaptersLatest[0].chapter_name.match(/\d+/);
+    if (match) {
+      chapterNumber = match[0];
+    }
+  }
+  
+  // Cách 2: Lấy từ total_chapters nếu có
+  if (chapterNumber === "?" && comic.total_chapters && comic.total_chapters > 0) {
+    chapterNumber = comic.total_chapters.toString();
+  }
+  
+  // Cách 3: Lấy từ chapters
+  if (chapterNumber === "?" && comic.chapters && comic.chapters.length > 0) {
+    for (const chapter of comic.chapters) {
+      if (chapter.server_data && chapter.server_data.length > 0) {
+        for (const data of chapter.server_data) {
+          const match = data.chapter_name.match(/\d+/);
+          if (match) {
+            chapterNumber = match[0];
+            break;
+          }
+        }
+        if (chapterNumber !== "?") break;
+      }
+    }
+  }
+  
+  // Thời gian cập nhật
+  let updatedTime = "";
+  if (comic.chaptersLatest && comic.chaptersLatest.length > 0) {
+    try {
+      updatedTime = formatDistanceToNow(new Date(comic.updatedAt), {
+        addSuffix: true,
+        locale: vi
+      });
+    } catch (error) {
+      updatedTime = "gần đây";
+    }
+  }
+
+  return (
+    <Link href={`/truyen/${comic.slug}`} className={`group ${className}`}>
+      <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
+        <Image
+          src={getImageUrl(comic.thumb_url)}
+          alt={comic.name}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/images/placeholder.jpg';
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        {/* Chapter badge */}
+        <div className="absolute top-1 md:top-2 left-1 md:left-2 px-1.5 py-0.5 md:px-2 md:py-1 text-[10px] md:text-xs rounded-full bg-pink-600 text-white">
+          Chap {chapterNumber}
+        </div>
+      </div>
+      
+      <div className="mt-2">
+        <h3 className="font-medium text-white line-clamp-2 group-hover:text-pink-400 transition-colors">
+          {comic.name}
+        </h3>
+        {updatedTime && (
+          <div className="mt-1">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <span className="font-medium text-pink-400">Cập Nhật:</span>
+              <span>{updatedTime}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+} 
