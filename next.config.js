@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: 'export',
   images: {
     remotePatterns: [
       {
@@ -52,6 +52,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Dùng với output export để định dạng URL đúng
+  trailingSlash: true,
 };
 
 module.exports = nextConfig; 

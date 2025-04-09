@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "cp -r .next/standalone/* .next/",
+    "export": "next build",
     "start": "next start",
     "lint": "next lint",
     "fetch-comics": "ts-node scripts/fetch-comics.ts",
