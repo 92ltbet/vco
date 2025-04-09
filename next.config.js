@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
@@ -39,6 +40,13 @@ const nextConfig = {
   },
   // Hạn chế kích thước output
   outputFileTracing: false,
+  // Thêm cấu hình cho Cloudflare Pages
+  experimental: {
+    optimizeCss: true,
+    serverActions: true,
+  },
+  // nextjs strict mode
+  reactStrictMode: true,
 };
 
 module.exports = nextConfig; 
