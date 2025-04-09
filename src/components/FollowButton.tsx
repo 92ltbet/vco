@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 interface FollowButtonProps {
   comicId: string;
@@ -8,7 +9,6 @@ interface FollowButtonProps {
   comicSlug: string;
   comicThumb: string;
   isFollowing: boolean;
-  onFollow: (formData: FormData) => Promise<void>;
 }
 
 export default function FollowButton({ 
@@ -17,7 +17,6 @@ export default function FollowButton({
   comicSlug, 
   comicThumb, 
   isFollowing, 
-  onFollow 
 }: FollowButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isFollowingState, setIsFollowingState] = useState(isFollowing);
@@ -38,8 +37,31 @@ export default function FollowButton({
   // Xử lý khi submit form
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    await onFollow(formData);
+    
+    // Lấy danh sách truyện đã theo dõi từ cookie
+    const followedComics = JSON.parse(Cookies.get('followed_comics') || '[]');
+    
+    // Kiểm tra xem truyện đã được theo dõi chưa
+    const existingIndex = followedComics.findIndex((comic: any) => comic.id === comicId);
+    
+    if (existingIndex === -1) {
+      // Thêm truyện mới vào danh sách theo dõi
+      followedComics.push({
+        id: comicId,
+        name: comicName,
+        slug: comicSlug,
+        thumb: comicThumb
+      });
+    } else {
+      // Xóa truyện khỏi danh sách theo dõi
+      followedComics.splice(existingIndex, 1);
+    }
+    
+    // Lưu danh sách mới vào cookie
+    Cookies.set('followed_comics', JSON.stringify(followedComics), {
+      path: '/',
+      expires: 30 // 30 ngày
+    });
     
     // Hiển thị thông báo và cập nhật state
     const newFollowState = !isFollowingState;
