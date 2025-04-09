@@ -5,12 +5,18 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import './style.css';
+import Image from 'next/image';
 
 interface ChapterPageProps {
   params: {
     slug: string;
     chapter: string;
   };
+}
+
+interface ChapterImage {
+  image_page: number;
+  image_file: string;
 }
 
 // Thêm hàm generateStaticParams để hỗ trợ static export
@@ -93,25 +99,6 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
       ? sortedChapters[currentChapterIndex + 1] 
       : null;
 
-    // Lưu lịch sử đọc
-    try {
-      await fetch('/api/history', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          comic: comicData,
-          chapter: {
-            name: chapterData.chapter_name,
-            slug: params.chapter,
-          },
-        }),
-      });
-    } catch (error) {
-      console.error('Error saving reading history:', error);
-    }
-
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
         {/* Header */}
@@ -193,12 +180,20 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               const altText = `${chapter.comic_name} - Chương ${chapter.chapter_name} - Trang ${index + 1}`;
               
               return (
-                <ChapterImage 
+                <div 
                   key={index}
-                  imageUrl={imageUrl}
-                  alt={altText}
-                  isEager={index < 3}
-                />
+                  className="relative w-full h-auto mb-2 overflow-hidden bg-gray-800 rounded-md"
+                >
+                  <Image 
+                    src={imageUrl}
+                    alt={altText}
+                    width={800}
+                    height={1200}
+                    priority={index < 3}
+                    className="mx-auto max-w-full h-auto object-contain"
+                    unoptimized
+                  />
+                </div>
               );
             })}
           </div>
@@ -214,11 +209,12 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               </Link>
             )}
             
-            <ChapterListPopup
-              chapters={comic.chapters[0].server_data}
-              currentChapter={params.chapter}
-              comicSlug={params.slug}
-            />
+            <Link 
+              href={`/truyen/${params.slug}`} 
+              className="flex-1 sm:flex-none px-2 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg bg-gradient-to-r from-gray-600 to-gray-700 hover:opacity-90 transition-opacity text-white font-medium text-center text-sm md:text-base"
+            >
+              Danh sách chương
+            </Link>
             
             {nextChapter && (
               <Link 
